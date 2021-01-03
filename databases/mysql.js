@@ -81,7 +81,7 @@ function editCountry(code, name, details) {
 
 function editCity(code, name, population, isCoastal, area) {
     return new Promise((resolve, reject) => {
-        connection.query("UPDATE city SET cty_name = ?, population = ?, isCoastal = ?, areaKM = ? WHERE co_code = ?", [name, population, isCoastal ? 'true' : 'false', area, code], function (err, results) {
+        connection.query("UPDATE city SET cty_name = ?, population = ?, isCoastal = ?, areaKM = ? WHERE cty_code = ?", [name, population, isCoastal ? 'true' : 'false', area, code], function (err, results) {
             if (err) {
                 reject(err);
             } else {
@@ -91,9 +91,36 @@ function editCity(code, name, population, isCoastal, area) {
     })
 }
 
+function removeCity(code) {
+    return new Promise((resolve, reject) => {
+        connection.query("DELETE FROM city WHERE cty_code = ?", [code], function (err, results) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results);
+            }
+        })
+    })
+}
+
+function addNewCity(code, country_code, city_name, population, isCoastal, areaKM) {
+    return new Promise((resolve, reject) => {
+        connection.query("INSERT INTO city VALUES(?, ?, ?, ?, ?, ?)", [...arguments], function (err, results) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(results);
+            }
+        })
+    })
+}
+
+module.exports.removeCity = removeCity
 module.exports.editCity = editCity
+module.exports.addNewCity = addNewCity
+module.exports.getAllCities = getAllCities
+
 module.exports.editCountry = editCountry
 module.exports.getAllCountries = getAllCountries
-module.exports.getAllCities = getAllCities
 module.exports.addNewCountry = addNewCountry;
 module.exports.removeCountry = removeCountry;
