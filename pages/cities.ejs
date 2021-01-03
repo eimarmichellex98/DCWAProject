@@ -78,33 +78,39 @@
         <a class="btn btn-primary" href="/">Go Back</a>
         <div class="row">
             <div class="col-7">
-                <h2>All countries listed</h2>
+                <h2>All cities listed</h2>
 
                 <table class="table table-bordered table-striped table-hover" id="result-table">
                     <thead>
                         <tr>
-                            <th>Code</th>
+                            <th>City Code</th>
                             <th>Name</th>
-                            <th>Description</th>
-                            <th>Actions</th>
+                            <th>Population</th>
+                            <th>Area</th>
                         </tr>
                     </thead>
 
                     <% data.forEach(city=> { %>
-                        <tr id=<%=city.co_code %> >
+                        <tr id=<%=city.cty_code %> >
                             <td>
-                                <%= city.co_code %>
+                                <%= city.cty_code %>
                             </td>
                             <td>
-                                <%= city.co_name %>
+                                <%= city.cty_name %>
+                                    <%if (city.isCoastal == 'true') { %>
+                                        <span class="badge bg-secondary">Coastal</span>
+                                        <% } %>
                             </td>
                             <td>
-                                <%= city.co_details %>
+                                <%= city.population %>
+                            </td>
+                            <td>
+                                <%= city.areaKM %>
                             </td>
                             <td>
                                 <div>
                                     <a class="btn btn-info text-white mb-1" href="#edit-form"
-                                        onclick="$('#edit-country-code').val('<%= city.co_code %>'); $('#edit-country-name').val('<%= city.co_name %>'); $('#edit-country-details').val('<%= city.co_details %>');">Edit</a>
+                                        onclick="$('#edit-city-code').val('<%= city.cty_code %>'); $('#edit-city-name').val('<%= city.cty_name %>'); $('#edit-city-population').val('<%= city.population %>');">Edit</a>
                                     <button class="btn btn-danger"
                                         onclick="onRemove(`<%= city.co_code %>`);">Delete</button>
                                 </div>
@@ -116,45 +122,45 @@
 
             <div class="col-3">
                 <div style="mb-6">
-                    <h2>Add a country</h2>
+                    <h2>Add a city</h2>
                     <form id="input-form" action="/countries" method="post" onsubmit="return false">
                         <div class="mb-2">
-                            <label class="form-label">Country Code</label>
-                            <input type="text" id="input-country-code" name="code" class="form-control">
+                            <label class="form-label">City Code</label>
+                            <input required type="text" id="input-city-code" name="code" class="form-control">
                         </div>
 
                         <div class="mb-2">
-                            <label>Country Name</label>
-                            <input type="text" id="input-country-name" name="name" class="form-control">
+                            <label>City Name</label>
+                            <input required type="text" id="input-city-name" name="name" class="form-control">
                         </div>
 
                         <div class="mb-2">
-                            <label>Details</label>
-                            <textarea id="input-country-details" name="details" class="form-control"></textarea>
+                            <label>Population</label>
+                            <input required type="number" id="input-city-population" name="population" class="form-control"></input>
                         </div>
 
-                        <button name="submit" class="btn btn-primary" onclick="onSubmit()">Submit</button>
+                        <button name="submit" class="btn btn-primary" type="submit" onsubmit="onSubmit()">Submit</button>
                     </form>
                 </div>
                 <div>
-                    <h2>Edit a country</h2>
+                    <h2>Edit a city</h2>
                     <form id="edit-form" action="/countries" method="post" onsubmit="return false">
                         <div class="mb-2">
-                            <label class="form-label">Country Code</label>
-                            <input type="text" id="edit-country-code" readonly name="code" class="form-control">
+                            <label class="form-label">City Code</label>
+                            <input required type="text" id="edit-city-code" readonly name="code" class="form-control">
                         </div>
 
                         <div class="mb-2">
-                            <label>New Country Name</label>
-                            <input type="text" id="edit-country-name" name="name" class="form-control">
+                            <label>New City Name</label>
+                            <input required type="text" id="edit-city-name" name="name" class="form-control">
                         </div>
 
                         <div class="mb-2">
-                            <label>New Details</label>
-                            <textarea id="edit-country-details" name="details" class="form-control"></textarea>
+                            <label>New Population</label>
+                            <input required type="number" id="edit-city-population" name="details" class="form-control"></input>
                         </div>
 
-                        <button name="submit" class="btn btn-primary" onclick="onEdit()">Submit</button>
+                        <button name="submit" type="submit" class="btn btn-primary" onsubmit="onEdit()">Submit</button>
                     </form>
                 </div>
             </div>
