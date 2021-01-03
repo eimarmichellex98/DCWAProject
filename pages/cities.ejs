@@ -17,28 +17,23 @@
 
 <body style="margin: 1rem;">
     <script>
-        function onSubmit() {
-            var code = $("#input-country-code").val()
-            var name = $("#input-country-name").val()
-            var details = $("#input-country-details").val()
+        //below we are looking at the list of cities, deleting, editing/updating and adding them
+        function onSubmit(e) {
+            e.preventDefault()
 
-            $.post("/countries", $("#input-form").serialize()).done(function (data) {
+            $.post("/cities", $("#input-form").serialize()).done(function (data) {
                 $("#good-alert").fadeIn()
-
-                $("#result-table").append(`<tr>
-                    <td>${code}</td>
-                    <td>${name}</td>
-                    <td>${details}</td>
-                </tr>`)
             }).fail(function (xhr, status, err) {
                 $("#bad-alert").text(xhr.responseText || `An error occured (${xhr.status})`)
                 $("#bad-alert").fadeIn()
             })
-        }
 
+            return false
+        }
+        //removing city from list of cities
         function onRemove(code) {
             $.ajax({
-                url: "/countries",
+                url: "/cities",
                 type: "DELETE",
                 data: { code: code },
                 success: (result) => {
@@ -49,15 +44,9 @@
                 }
             })
         }
-
+        //editing and updating a city
         function onEdit() {
-            var code = $("#edit-country-code").val()
-            var name = $("#edit-country-name").val()
-            var details = $("#edit-country-details").val()
-
-            $.post("/countries/update", $("#edit-form").serialize()).done(function (data) {
-                $("#good-alert").fadeIn()
-
+            $.post("/cities/update", $("#edit-form").serialize()).done(function (data) {
                 location.reload(true);
             }).fail(function (xhr, status, err) {
                 $("#bad-alert").text(xhr.responseText || `An error occured (${xhr.status})`)
@@ -75,7 +64,7 @@
             Succeded!
         </div>
 
-        <a class="btn btn-primary" href="/">Go Back</a>
+        <a class="btn btn-success" href="/">Go Back</a>
         <div class="row">
             <div class="col-7">
                 <h2>All cities listed</h2>
@@ -97,7 +86,7 @@
                             </td>
                             <td>
                                 <%= city.cty_name %>
-                                    <%if (city.isCoastal == 'true') { %>
+                                    <%if (city.isCoastal=='true' ) { %>
                                         <span class="badge bg-secondary">Coastal</span>
                                         <% } %>
                             </td>
@@ -110,9 +99,9 @@
                             <td>
                                 <div>
                                     <a class="btn btn-info text-white mb-1" href="#edit-form"
-                                        onclick="$('#edit-city-code').val('<%= city.cty_code %>'); $('#edit-city-name').val('<%= city.cty_name %>'); $('#edit-city-population').val('<%= city.population %>');">Edit</a>
+                                        onclick="$('#edit-city-countrycode').val('<%= city.co_code %>'); $('#edit-city-code').val('<%= city.cty_code %>'); $('#edit-city-name').val('<%= city.cty_name %>'); $('#edit-city-population').val('<%= city.population %>');">Edit</a>
                                     <button class="btn btn-danger"
-                                        onclick="onRemove(`<%= city.co_code %>`);">Delete</button>
+                                        onclick="onRemove(`<%= city.cty_code %>`);">Delete</button>
                                 </div>
                             </td>
                         </tr>
@@ -120,10 +109,24 @@
                 </table>
             </div>
 
-            <div class="col-3">
-                <div style="mb-6">
+            <div class="col">
+                <div>
                     <h2>Add a city</h2>
-                    <form id="input-form" action="/countries" method="post" onsubmit="return false">
+                    <form id="input-form" action="/cities" method="post" onsubmit="onSubmit(this); return false">
+                        <div class="mb-2 input-group">
+                            <div class="input-group-prepend">
+                                <label class="input-group-text">Country Code</label>
+                            </div>
+
+                            <select required id="input-city-countrycode" name="countrycode" class="custom-select">
+                                <% countries.forEach(country=> { %>
+                                    <option value="<%= country.co_code %>">
+                                        <%= country.co_name %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+
                         <div class="mb-2">
                             <label class="form-label">City Code</label>
                             <input required type="text" id="input-city-code" name="code" class="form-control">
@@ -136,31 +139,60 @@
 
                         <div class="mb-2">
                             <label>Population</label>
-                            <input required type="number" id="input-city-population" name="population" class="form-control"></input>
+                            <input required type="number" id="input-city-population" name="population"
+                                class="form-control"></input>
                         </div>
 
-                        <button name="submit" class="btn btn-primary" type="submit" onsubmit="onSubmit()">Submit</button>
-                    </form>
+                        <div class="mb-2">
+                            <label>Area</label>
+                            <input required type="number" id="input-city-area" name="area"
+                                class="form-control"></input>
+                        </div>
+
+                        <div class="mb-2 form-check">
+                            <input type="checkbox" class="form-check-input" id="input-city-area" name="coastal" />
+                            <label class="form-check-label" for="input-city-area">Beside coast</label>
+                        </div>
+
+                        <button name="submit" class="btn btn-success" type="submit">Submit</button>
+                        </form>
                 </div>
-                <div>
+                <div class="mt-6">
                     <h2>Edit a city</h2>
-                    <form id="edit-form" action="/countries" method="post" onsubmit="return false">
+                    <form id="edit-form" action="/countries" method="post" onsubmit="onEdit(this); return false">
+                        <div class="mb-2">
+                            <label class="form-label">Country Code</label>
+                            <input readonly type="text" id="edit-city-countrycode" name="countrycode" class="form-control">
+                        </div>
+
                         <div class="mb-2">
                             <label class="form-label">City Code</label>
-                            <input required type="text" id="edit-city-code" readonly name="code" class="form-control">
+                            <input required type="text" id="edit-city-code" name="code" class="form-control">
                         </div>
 
                         <div class="mb-2">
-                            <label>New City Name</label>
+                            <label>City Name</label>
                             <input required type="text" id="edit-city-name" name="name" class="form-control">
                         </div>
 
                         <div class="mb-2">
-                            <label>New Population</label>
-                            <input required type="number" id="edit-city-population" name="details" class="form-control"></input>
+                            <label>Population</label>
+                            <input required type="number" id="edit-city-population" name="population"
+                                class="form-control"></input>
                         </div>
 
-                        <button name="submit" type="submit" class="btn btn-primary" onsubmit="onEdit()">Submit</button>
+                        <div class="mb-2">
+                            <label>Area</label>
+                            <input required type="number" id="edit-city-area" name="area"
+                                class="form-control"></input>
+                        </div>
+
+                        <div class="mb-2 form-check">
+                            <input type="checkbox" class="form-check-input" id="edit-city-area" name="coastal" />
+                            <label class="form-check-label" for="edit-city-area">Beside coast</label>
+                        </div>
+
+                        <button name="submit" type="submit" class="btn btn-success">Submit</button>
                     </form>
                 </div>
             </div>

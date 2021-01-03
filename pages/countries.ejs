@@ -17,11 +17,8 @@
 
 <body style="margin: 1rem;">
     <script>
+        //below we are looking at the list of countries, deleting, editing/updating and adding them
         function onSubmit() {
-            var code = $("#input-country-code").val()
-            var name = $("#input-country-name").val()
-            var details = $("#input-country-details").val()
-
             $.post("/countries", $("#input-form").serialize()).done(function (data) {
                 $("#good-alert").fadeIn()
 
@@ -35,7 +32,7 @@
                 $("#bad-alert").fadeIn()
             })
         }
-
+        //removing a country from countires list
         function onRemove(code) {
             $.ajax({
                 url: "/countries",
@@ -49,7 +46,7 @@
                 }
             })
         }
-
+        //editing a country, update it
         function onEdit() {
             var code = $("#edit-country-code").val()
             var name = $("#edit-country-name").val()
@@ -65,17 +62,17 @@
             })
         }
     </script>
-
+    
     <div class="container">
         <div id="bad-alert" class="alert alert-danger" style="display: none;" role="alert">
             Try again later!
         </div>
-
+        
         <div id="good-alert" class="alert alert-success" style="display: none;" role="alert">
             Succeded!
         </div>
 
-        <a class="btn btn-primary" href="/">Go Back</a>
+        <a class="btn btn-success" href="/">Go Back</a>
         <div class="row">
             <div class="col-7">
                 <h2>All countries listed</h2>
@@ -133,7 +130,7 @@
                             <textarea id="input-country-details" name="details" class="form-control"></textarea>
                         </div>
 
-                        <button name="submit" class="btn btn-primary" type="submit" onsubmit="onSubmit()">Submit</button>
+                        <button name="submit" class="btn btn-success" type="submit" onsubmit="onSubmit()">Submit</button>
                     </form>
                 </div>
                 <div>
@@ -154,7 +151,7 @@
                             <textarea id="edit-country-details" name="details" class="form-control"></textarea>
                         </div>
 
-                        <button name="submit" class="btn btn-primary" type="submit" onsubmit="onEdit()">Submit</button>
+                        <button name="submit" class="btn btn-success" type="submit" onsubmit="onEdit()">Submit</button>
                     </form>
                 </div>
             </div>

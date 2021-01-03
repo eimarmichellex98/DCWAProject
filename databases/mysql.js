@@ -1,7 +1,7 @@
 var mysql = require("mysql")
 var settings = require("./settings.json")
 
-// we create a connection here
+//creating a connection here
 const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -9,7 +9,7 @@ const connection = mysql.createConnection({
     password: settings.password,
     database: "geography"
 })
-
+//catching error/outputing connection ot database in a message
 connection.connect((err) => {
     if (err) {
         console.log(err);
@@ -17,8 +17,7 @@ connection.connect((err) => {
         console.log("Connected to the database!");
     }
 })
-
-// this is an async implementation of quering the database for all of the records of the countries
+//asynchronous implementation, querying the database for records of all countries
 function getAllCountries() {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * from country', function (err, results) {
@@ -30,7 +29,7 @@ function getAllCountries() {
         })
     })
 }
-
+//same as above but for cities
 function getAllCities() {
     return new Promise((resolve, reject) => {
         connection.query('SELECT * from city', function (err, results) {
@@ -42,7 +41,7 @@ function getAllCities() {
         })
     })
 }
-
+//adding a new country
 function addNewCountry(code, name, desc) {
     return new Promise((resolve, reject) => {
         connection.query("INSERT INTO country VALUES(?, ?, ?)", [code, name, desc], function (err, results) {
@@ -54,7 +53,7 @@ function addNewCountry(code, name, desc) {
         })
     })
 }
-
+//removing a country
 function removeCountry(code) {
     return new Promise((resolve, reject) => {
         connection.query("DELETE FROM country WHERE co_code = ?", [code], function (err, results) {
@@ -66,7 +65,7 @@ function removeCountry(code) {
         })
     })
 }
-
+//editting a country
 function editCountry(code, name, details) {
     return new Promise((resolve, reject) => {
         connection.query("UPDATE country SET co_name = ?, co_details = ? WHERE co_code = ?", [name, details, code], function (err, results) {
@@ -78,9 +77,10 @@ function editCountry(code, name, details) {
         })
     })
 }
-
+//editting a city
 function editCity(code, name, population, isCoastal, area) {
     return new Promise((resolve, reject) => {
+        console.log(isCoastal);
         connection.query("UPDATE city SET cty_name = ?, population = ?, isCoastal = ?, areaKM = ? WHERE cty_code = ?", [name, population, isCoastal ? 'true' : 'false', area, code], function (err, results) {
             if (err) {
                 reject(err);
@@ -90,7 +90,7 @@ function editCity(code, name, population, isCoastal, area) {
         })
     })
 }
-
+//removing a city
 function removeCity(code) {
     return new Promise((resolve, reject) => {
         connection.query("DELETE FROM city WHERE cty_code = ?", [code], function (err, results) {
@@ -102,10 +102,10 @@ function removeCity(code) {
         })
     })
 }
-
+//adding a city
 function addNewCity(code, country_code, city_name, population, isCoastal, areaKM) {
     return new Promise((resolve, reject) => {
-        connection.query("INSERT INTO city VALUES(?, ?, ?, ?, ?, ?)", [...arguments], function (err, results) {
+        connection.query("INSERT INTO city VALUES(?, ?, ?, ?, ?, ?)", [code, country_code, city_name, population, isCoastal ? 'true' : 'false', areaKM], function (err, results) {
             if (err) {
                 reject(err);
             } else {
